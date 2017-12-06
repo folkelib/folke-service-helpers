@@ -1,0 +1,10 @@
+{
+  "name": "folke-service-helpers",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "tsc",
+    "watch": "tsc -w"
+  }
+}
