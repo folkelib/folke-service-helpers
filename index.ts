@@ -1,5 +1,3 @@
-import { AssertionError } from "assert";
-
 export type Data = ArrayBuffer | ArrayBufferView | Blob | FormData | string | undefined;
 
 export interface ApiClient {
