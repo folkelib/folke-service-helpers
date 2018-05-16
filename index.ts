@@ -1,8 +1,8 @@
 export type Data = Blob | Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer | FormData | string | null;
 
 export interface ApiClient {
-    fetch(url: string, method: string, data: Data): Promise<Response>;
-    fetchJson<TD>(url: string, method: string, data: Data): Promise<TD>;
+    fetch(url: string, method: string, data: Data | undefined): Promise<Response>;
+    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<TD>;
 }
 
 export class ResponseError extends Error {
