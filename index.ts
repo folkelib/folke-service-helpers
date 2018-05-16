@@ -1,4 +1,4 @@
-export type Data = ArrayBuffer | ArrayBufferView | Blob | FormData | string | undefined;
+export type Data = Blob | Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer | FormData | string | null;
 
 export interface ApiClient {
     fetch(url: string, method: string, data: Data): Promise<Response>;
@@ -6,7 +6,7 @@ export interface ApiClient {
 }
 
 export class ResponseError extends Error {
-    response: Response
+    response?: Response;
     constructor(message:string) {
         super(message);
     }
@@ -16,12 +16,12 @@ export class SimpleApiClient implements ApiClient {
     constructor(private options?: { onQueryStart?: () => void, onQueryEnd?: () => void }) {}
 
     /** Fetches an url that returns one value */
-    fetchJson<TD>(url: string, method: string, data: Data) {
+    fetchJson<TD>(url: string, method: string, data: Data | undefined) {
         return this.fetch(url, method, data).then(response => <Promise<TD>>response.json());
     }
 
     /** Fetches an url that returns nothing */
-    fetch(url: string, method: string, data: Data): Promise<Response> {
+    fetch(url: string, method: string, data: Data | undefined): Promise<Response> {
         if (this.options && this.options.onQueryStart) this.options.onQueryStart();
 
         const headers = new Headers();

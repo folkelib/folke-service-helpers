@@ -1,10 +1,10 @@
-export declare type Data = ArrayBuffer | ArrayBufferView | Blob | FormData | string | undefined;
+export declare type Data = Blob | Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer | FormData | string | null;
 export interface ApiClient {
     fetch(url: string, method: string, data: Data): Promise<Response>;
     fetchJson<TD>(url: string, method: string, data: Data): Promise<TD>;
 }
 export declare class ResponseError extends Error {
-    response: Response;
+    response?: Response;
     constructor(message: string);
 }
 export declare class SimpleApiClient implements ApiClient {
@@ -14,9 +14,9 @@ export declare class SimpleApiClient implements ApiClient {
         onQueryEnd?: (() => void) | undefined;
     } | undefined);
     /** Fetches an url that returns one value */
-    fetchJson<TD>(url: string, method: string, data: Data): Promise<TD>;
+    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<TD>;
     /** Fetches an url that returns nothing */
-    fetch(url: string, method: string, data: Data): Promise<Response>;
+    fetch(url: string, method: string, data: Data | undefined): Promise<Response>;
 }
 /** Creates a guery string from a list of parameters. Starts with a ? */
 export declare function getQueryString(parameters?: {
