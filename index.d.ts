@@ -1,20 +1,22 @@
 export declare type Data = Blob | Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer | FormData | string | null;
 export interface ApiClient {
-    fetch(url: string, method: string, data: Data): Promise<Response>;
-    fetchJson<TD>(url: string, method: string, data: Data): Promise<TD>;
-}
-export declare class ResponseError extends Error {
-    response?: Response;
-    constructor(message: string);
+    fetch(url: string, method: string, data: Data | undefined): Promise<Response>;
+    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<{
+        value: TD;
+        response: Response;
+    }>;
 }
 export declare class SimpleApiClient implements ApiClient {
-    private options;
+    private options?;
     constructor(options?: {
         onQueryStart?: (() => void) | undefined;
         onQueryEnd?: (() => void) | undefined;
     } | undefined);
     /** Fetches an url that returns one value */
-    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<TD>;
+    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<{
+        value: TD;
+        response: Response;
+    }>;
     /** Fetches an url that returns nothing */
     fetch(url: string, method: string, data: Data | undefined): Promise<Response>;
 }
@@ -28,4 +30,4 @@ export interface ErrorMessages {
     notFound: string;
     unknownError: string;
 }
-export declare function parseErrors(error: ResponseError, showError: (error: string) => void, errorMessages?: ErrorMessages): void;
+export declare function parseErrors(error: Response, errorMessages?: ErrorMessages): Promise<string>;

@@ -1,6 +1,6 @@
 {
   "name": "folke-service-helpers",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -8,6 +8,6 @@
     "watch": "tsc -w"
   },
   "devDependencies": {
-    "typescript": "^2.8.3"
+    "typescript": "^3.5.1"
   }
 }

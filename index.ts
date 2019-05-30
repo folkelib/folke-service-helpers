@@ -2,22 +2,17 @@ export type Data = Blob | Int8Array | Int16Array | Int32Array | Uint8Array | Uin
 
 export interface ApiClient {
     fetch(url: string, method: string, data: Data | undefined): Promise<Response>;
-    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<TD>;
-}
-
-export class ResponseError extends Error {
-    response?: Response;
-    constructor(message:string) {
-        super(message);
-    }
+    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<{ value: TD, response: Response }>;
 }
 
 export class SimpleApiClient implements ApiClient {
     constructor(private options?: { onQueryStart?: () => void, onQueryEnd?: () => void }) {}
 
     /** Fetches an url that returns one value */
-    fetchJson<TD>(url: string, method: string, data: Data | undefined) {
-        return this.fetch(url, method, data).then(response => <Promise<TD>>response.json());
+    async fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<{ value: TD, response: Response }> {
+        const response = await this.fetch(url, method, data);
+        const json = await response.json();
+        return { value: json as TD, response: response };
     }
 
     /** Fetches an url that returns nothing */
@@ -33,15 +28,7 @@ export class SimpleApiClient implements ApiClient {
             headers: headers
         };
         if (data != undefined) requestInit.body = data;
-        return window.fetch(url, requestInit).then(response => {
-            if (this.options && this.options.onQueryEnd) this.options.onQueryEnd();
-            if (response.status >= 300 || response.status < 200) {
-                var error = new ResponseError(response.statusText);
-                error.response = response;
-                throw error;
-            }
-            return response;
-        });
+        return window.fetch(url, requestInit);
     }
 }
 
@@ -84,31 +71,22 @@ const defaultErrorMessages = {
     unknownError: "Unknown error"
 }
 
-export function parseErrors(error:ResponseError, showError: (error: string) => void, errorMessages: ErrorMessages = defaultErrorMessages) {
-    if (!error.response) {
-        showError(errorMessages.unknownError);
-        return;
-    }
-
-    switch (error.response.status) {
+export async function parseErrors(error:Response, errorMessages: ErrorMessages = defaultErrorMessages) {
+    switch (error.status) {
         case 401:
-            showError(errorMessages.unauthorized);
-            break;
+            return errorMessages.unauthorized;
         case 404:
-            showError(errorMessages.notFound);
-            break;
+            return errorMessages.notFound;
         case 500:
-            showError(errorMessages.internalServerError);
-            break;
+            return errorMessages.internalServerError;
         default:
-            if (!error.response.json) {
-                showError(errorMessages.unknownError);
+            if (!error.json) {
+                return errorMessages.unknownError;
             }
             else {
-                error.response.json().then((value:string) => {
-                    showError(value);
-                });
+                const json = await error.json();
+                // TODO
+                return JSON.stringify(json);
             }
-            break;
     }
 }
