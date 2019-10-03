@@ -42,16 +42,21 @@ var SimpleApiClient = /** @class */ (function () {
     /** Fetches an url that returns one value */
     SimpleApiClient.prototype.fetchJson = function (url, method, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, json;
+            var response, json, text;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.fetch(url, method, data)];
                     case 1:
                         response = _a.sent();
+                        if (!response.ok) return [3 /*break*/, 3];
                         return [4 /*yield*/, response.json()];
                     case 2:
                         json = _a.sent();
-                        return [2 /*return*/, { value: json, response: response }];
+                        return [2 /*return*/, { ok: true, value: json, response: response }];
+                    case 3: return [4 /*yield*/, response.text()];
+                    case 4:
+                        text = _a.sent();
+                        return [2 /*return*/, { response: response, ok: false, message: text }];
                 }
             });
         });
@@ -107,29 +112,18 @@ var defaultErrorMessages = {
 function parseErrors(error, errorMessages) {
     if (errorMessages === void 0) { errorMessages = defaultErrorMessages; }
     return __awaiter(this, void 0, void 0, function () {
-        var _a, json;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _a = error.status;
-                    switch (_a) {
-                        case 401: return [3 /*break*/, 1];
-                        case 404: return [3 /*break*/, 2];
-                        case 500: return [3 /*break*/, 3];
-                    }
-                    return [3 /*break*/, 4];
-                case 1: return [2 /*return*/, errorMessages.unauthorized];
-                case 2: return [2 /*return*/, errorMessages.notFound];
-                case 3: return [2 /*return*/, errorMessages.internalServerError];
-                case 4:
-                    if (!!error.json) return [3 /*break*/, 5];
+        return __generator(this, function (_a) {
+            switch (error.status) {
+                case 401:
+                    return [2 /*return*/, errorMessages.unauthorized];
+                case 404:
+                    return [2 /*return*/, errorMessages.notFound];
+                case 500:
+                    return [2 /*return*/, errorMessages.internalServerError];
+                default:
                     return [2 /*return*/, errorMessages.unknownError];
-                case 5: return [4 /*yield*/, error.json()];
-                case 6:
-                    json = _b.sent();
-                    // TODO
-                    return [2 /*return*/, JSON.stringify(json)];
             }
+            return [2 /*return*/];
         });
     });
 }

@@ -1,18 +1,25 @@
 export type Data = Blob | Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer | FormData | string | null;
 
+export type ApiResponse<TD> = { value: TD, response: Response, ok: true } | { response: Response, ok: false, message: string };
+
 export interface ApiClient {
     fetch(url: string, method: string, data: Data | undefined): Promise<Response>;
-    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<{ value: TD, response: Response }>;
+    fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<ApiResponse<TD>>;
 }
 
 export class SimpleApiClient implements ApiClient {
     constructor(private options?: { onQueryStart?: () => void, onQueryEnd?: () => void }) {}
 
     /** Fetches an url that returns one value */
-    async fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<{ value: TD, response: Response }> {
+    async fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<ApiResponse<TD>> {
         const response = await this.fetch(url, method, data);
-        const json = await response.json();
-        return { value: json as TD, response: response };
+        if (response.ok) {
+            const json = await response.json();
+            return { ok: true, value: json as TD, response: response };
+        } else {
+            const text = await response.text();
+            return { response: response, ok: false, message: text };
+        }        
     }
 
     /** Fetches an url that returns nothing */
@@ -31,7 +38,6 @@ export class SimpleApiClient implements ApiClient {
         return window.fetch(url, requestInit);
     }
 }
-
 
 /** Creates a guery string from a list of parameters. Starts with a ? */
 export function getQueryString(parameters?: { [key: string]: any }) {
@@ -80,13 +86,6 @@ export async function parseErrors(error:Response, errorMessages: ErrorMessages =
         case 500:
             return errorMessages.internalServerError;
         default:
-            if (!error.json) {
-                return errorMessages.unknownError;
-            }
-            else {
-                const json = await error.json();
-                // TODO
-                return JSON.stringify(json);
-            }
+            return errorMessages.unknownError;
     }
 }
