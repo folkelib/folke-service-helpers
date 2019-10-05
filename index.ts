@@ -8,7 +8,7 @@ export interface ApiClient {
 }
 
 export class SimpleApiClient implements ApiClient {
-    constructor(private options?: { onQueryStart?: () => void, onQueryEnd?: () => void }) {}
+    constructor(private options?: { onQueryStart?: () => void, onQueryEnd?: () => void, getAuthentication?: () => Promise<string> }) {}
 
     /** Fetches an url that returns one value */
     async fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<ApiResponse<TD>> {
@@ -23,19 +23,22 @@ export class SimpleApiClient implements ApiClient {
     }
 
     /** Fetches an url that returns nothing */
-    fetch(url: string, method: string, data: Data | undefined): Promise<Response> {
+    async fetch(url: string, method: string, data: Data | undefined): Promise<Response> {
         if (this.options && this.options.onQueryStart) this.options.onQueryStart();
 
         const headers = new Headers();
         headers.append("Accept", "application/json");
         headers.append('Content-Type', 'application/json');
-        var requestInit: RequestInit = {
+        if (this.options && this.options.getAuthentication) {
+            headers.append("Authorization", await this.options.getAuthentication());
+        }
+        const requestInit: RequestInit = {
             method: method,
             credentials: 'same-origin',
             headers: headers
         };
         if (data != undefined) requestInit.body = data;
-        return window.fetch(url, requestInit);
+        return await window.fetch(url, requestInit);
     }
 }
 

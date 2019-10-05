@@ -17,6 +17,7 @@ export declare class SimpleApiClient implements ApiClient {
     constructor(options?: {
         onQueryStart?: (() => void) | undefined;
         onQueryEnd?: (() => void) | undefined;
+        getAuthentication?: (() => Promise<string>) | undefined;
     } | undefined);
     /** Fetches an url that returns one value */
     fetchJson<TD>(url: string, method: string, data: Data | undefined): Promise<ApiResponse<TD>>;

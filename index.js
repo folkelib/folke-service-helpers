@@ -63,19 +63,36 @@ var SimpleApiClient = /** @class */ (function () {
     };
     /** Fetches an url that returns nothing */
     SimpleApiClient.prototype.fetch = function (url, method, data) {
-        if (this.options && this.options.onQueryStart)
-            this.options.onQueryStart();
-        var headers = new Headers();
-        headers.append("Accept", "application/json");
-        headers.append('Content-Type', 'application/json');
-        var requestInit = {
-            method: method,
-            credentials: 'same-origin',
-            headers: headers
-        };
-        if (data != undefined)
-            requestInit.body = data;
-        return window.fetch(url, requestInit);
+        return __awaiter(this, void 0, void 0, function () {
+            var headers, _a, _b, _c, requestInit;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        if (this.options && this.options.onQueryStart)
+                            this.options.onQueryStart();
+                        headers = new Headers();
+                        headers.append("Accept", "application/json");
+                        headers.append('Content-Type', 'application/json');
+                        if (!(this.options && this.options.getAuthentication)) return [3 /*break*/, 2];
+                        _b = (_a = headers).append;
+                        _c = ["Authorization"];
+                        return [4 /*yield*/, this.options.getAuthentication()];
+                    case 1:
+                        _b.apply(_a, _c.concat([_d.sent()]));
+                        _d.label = 2;
+                    case 2:
+                        requestInit = {
+                            method: method,
+                            credentials: 'same-origin',
+                            headers: headers
+                        };
+                        if (data != undefined)
+                            requestInit.body = data;
+                        return [4 /*yield*/, window.fetch(url, requestInit)];
+                    case 3: return [2 /*return*/, _d.sent()];
+                }
+            });
+        });
     };
     return SimpleApiClient;
 }());
