@@ -7,6 +7,10 @@
     "prepare": "tsc",
     "watch": "tsc -w"
   },
+  "dependencies": {
+    "@aspnet/signalr": "^1.1.4",
+    "mobx": "^5.13.0"
+  },
   "devDependencies": {
     "typescript": "^3.6.3"
   }
