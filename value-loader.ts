@@ -5,7 +5,7 @@ import { ApiResponse } from "./api-client";
 /** This class allows to load a value with a given parameter. It keep in cache only one value.
  * If you want to keep several values in cache, use MapLoader.
  */
-export class LazyLoader<TValue, TParameters> {
+export class ValueLoader<TValue, TParameters> {
     @observable cache: TValue | null = null;
     @observable private loadedParameters: string | null = null;
     private loadingParameters: string | null = null;
@@ -67,7 +67,7 @@ export class LazyLoader<TValue, TParameters> {
     }
 }
 
-export class LazyLoaderSync<TValue, TParameters> extends LazyLoader<TValue, TParameters> {
+export class ValueLoaderSync<TValue, TParameters> extends ValueLoader<TValue, TParameters> {
     private previousParameters: TParameters | undefined;
 
     constructor(
