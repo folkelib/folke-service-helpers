@@ -1,6 +1,7 @@
 import { observable, action, computed } from "mobx";
 import { UserManager } from "./user-manager";
 import { ApiResponse } from "./api-client";
+import * as signalR from "@microsoft/signalr";
 
 /** This class allows to load a value with a given parameter. It keep in cache only one value.
  * If you want to keep several values in cache, use MapLoader.
@@ -12,28 +13,47 @@ export class ValueLoader<TValue, TParameters> {
     private userToken: string | null;
     allowNotIdentified = false;
 
-    constructor(private loader: (parameters: TParameters) => Promise<ApiResponse<TValue>>, private userManager?: UserManager, private onChange?: (value: TValue) => void) {
+    constructor(
+        private loader: (
+            parameters: TParameters
+        ) => Promise<ApiResponse<TValue>>,
+        private userManager?: UserManager,
+        private onChange?: (value: TValue) => void
+    ) {
         this.userToken = userManager ? userManager.authorizationHeader : null;
     }
 
     /** Call this only in a @computed or in a render() with @observer */
     getValue(parameters: TParameters): TValue | null {
         const serialized = JSON.stringify(parameters);
-        if (this.loadedParameters === serialized && (this.userManager === undefined || this.userManager.authorizationHeader === this.userToken || this.userManager.authorizationHeader === null)) {
+        if (
+            this.loadedParameters === serialized &&
+            (this.userManager === undefined ||
+                this.userManager.authorizationHeader === this.userToken ||
+                this.userManager.authorizationHeader === null)
+        ) {
             return this.cache;
         }
-        if ((this.loadingParameters === serialized && (this.userManager === undefined || this.userManager.authorizationHeader === this.userToken) || (this.userManager !== undefined && this.userManager.authorizationHeader === null && !this.allowNotIdentified))) {
-            return this.cache;            
+        if (
+            (this.loadingParameters === serialized &&
+                (this.userManager === undefined ||
+                    this.userManager.authorizationHeader === this.userToken)) ||
+            (this.userManager !== undefined &&
+                this.userManager.authorizationHeader === null &&
+                !this.allowNotIdentified)
+        ) {
+            return this.cache;
         }
-        
+
         this.load(parameters, serialized);
         return null;
     }
 
     private load(id: TParameters, serialized: string) {
-        if (this.userManager) this.userToken = this.userManager.authorizationHeader;
+        if (this.userManager)
+            this.userToken = this.userManager.authorizationHeader;
         this.loadingParameters = serialized;
-        this.loader(id).then(x => {
+        this.loader(id).then((x) => {
             if (!x.ok) {
                 this.setValue(null, serialized);
             } else {
@@ -44,7 +64,11 @@ export class ValueLoader<TValue, TParameters> {
 
     @action
     refresh() {
-        if (this.loadedParameters) this.load(JSON.parse(this.loadedParameters) as TParameters, this.loadedParameters);
+        if (this.loadedParameters)
+            this.load(
+                JSON.parse(this.loadedParameters) as TParameters,
+                this.loadedParameters
+            );
     }
 
     @action
@@ -67,22 +91,40 @@ export class ValueLoader<TValue, TParameters> {
     }
 }
 
-export class ValueLoaderSync<TValue, TParameters> extends ValueLoader<TValue, TParameters> {
+export class ValueLoaderSync<TValue, TParameters> extends ValueLoader<
+    TValue,
+    TParameters
+> {
     private previousParameters: TParameters | undefined;
 
     constructor(
-        private connection: signalR.HubConnection, 
+        private connection: signalR.HubConnection,
         identifier: string,
-        loader: (parameters: TParameters) => Promise<ApiResponse<TValue>>, 
-        userManager?: UserManager, 
-        onChange?: (value: TValue) => void) {
-        super(async (parameters: TParameters) =>  {
-            if (this.previousParameters) this.connection.invoke(`Close${identifier}`, this.previousParameters);
-            this.previousParameters = parameters;
-            this.connection.invoke(`Open${identifier}`, parameters);
-            return loader(parameters);
-        }, userManager, onChange);
-        this.connection.on(`Update${identifier}`, (updatedValue: TValue, p: TParameters) => this.setValue(updatedValue, JSON.stringify(p)));
-        this.connection.on(`Delete${identifier}`, (p: TParameters) => this.setValue(null, JSON.stringify(p)));
+        loader: (parameters: TParameters) => Promise<ApiResponse<TValue>>,
+        userManager?: UserManager,
+        onChange?: (value: TValue) => void
+    ) {
+        super(
+            async (parameters: TParameters) => {
+                if (this.previousParameters)
+                    this.connection.invoke(
+                        `Close${identifier}`,
+                        this.previousParameters
+                    );
+                this.previousParameters = parameters;
+                this.connection.invoke(`Open${identifier}`, parameters);
+                return loader(parameters);
+            },
+            userManager,
+            onChange
+        );
+        this.connection.on(
+            `Update${identifier}`,
+            (updatedValue: TValue, p: TParameters) =>
+                this.setValue(updatedValue, JSON.stringify(p))
+        );
+        this.connection.on(`Delete${identifier}`, (p: TParameters) =>
+            this.setValue(null, JSON.stringify(p))
+        );
     }
 }

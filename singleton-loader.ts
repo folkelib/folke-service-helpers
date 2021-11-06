@@ -9,7 +9,11 @@ export class SingletonLoader<TValue> {
     private userToken: string | null;
     allowNotIdentified = false;
 
-    constructor(private loader: () => Promise<ApiResponse<TValue>>, private userManager?: UserManager, private onChange?: (value: TValue) => void) {
+    constructor(
+        private loader: () => Promise<ApiResponse<TValue>>,
+        private userManager?: UserManager,
+        private onChange?: (value: TValue) => void
+    ) {
         if (userManager) {
             this.userToken = userManager.authorizationHeader;
         } else {
@@ -19,21 +23,36 @@ export class SingletonLoader<TValue> {
 
     /** Call this only in a @computed or in a render() with @observer */
     getValue(): TValue | null {
-        if (this.loaded && (this.userManager === undefined || this.userManager.authorizationHeader === this.userToken || this.userManager.authorizationHeader === null)) {
+        if (
+            this.loaded &&
+            (this.userManager === undefined ||
+                this.userManager.authorizationHeader === this.userToken ||
+                this.userManager.authorizationHeader === null)
+        ) {
             return this.cache;
         }
-        if ((this.loading && (this.userManager === undefined || this.userManager.authorizationHeader === this.userToken)) || (this.userManager !== undefined && this.userManager.authorizationHeader === null && !this.allowNotIdentified)) {
-            return this.cache;            
+        if (
+            (this.loading &&
+                (this.userManager === undefined ||
+                    this.userManager.authorizationHeader === this.userToken)) ||
+            (this.userManager !== undefined &&
+                this.userManager.authorizationHeader === null &&
+                !this.allowNotIdentified)
+        ) {
+            return this.cache;
         }
-        
+
         this.load();
         return null;
     }
 
     private load() {
-        this.userToken = this.userManager !== undefined ? this.userManager.authorizationHeader : null;
+        this.userToken =
+            this.userManager !== undefined
+                ? this.userManager.authorizationHeader
+                : null;
         this.loading = true;
-        this.loader().then(x => {
+        this.loader().then((x) => {
             if (!x.ok) {
                 this.setValue(null);
             } else {

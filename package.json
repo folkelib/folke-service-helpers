@@ -1,17 +1,21 @@
 {
-  "name": "folke-service-helpers",
-  "version": "3.3.0",
-  "main": "index.js",
-  "license": "MIT",
-  "scripts": {
-    "prepare": "tsc",
-    "watch": "tsc -w"
-  },
-  "dependencies": {
-    "@aspnet/signalr": "^1.1.4",
-    "mobx": "^5.13.0"
-  },
-  "devDependencies": {
-    "typescript": "^3.6.3"
-  }
+    "name": "folke-service-helpers",
+    "version": "3.3.1",
+    "main": "index.js",
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "release": "standard-version"
+    },
+    "dependencies": {
+        "@microsoft/signalr": "^5.0.11",
+        "mobx": "^6.3.6"
+    },
+    "devDependencies": {
+        "prettier": "^2.4.1",
+        "standard-version": "^9.3.2",
+        "typescript": "^4.4.4"
+    },
+    "packageManager": "yarn@3.1.0"
 }

@@ -1,3 +1,11 @@
 yarn.lock
 tslint.json
 tsconfig.json
+*.ts
+!*.d.ts
+.prettierrc.json
+.yarnrc.yml
+.yarn
+.vscode
+.pnp.cjs
+tslint.json

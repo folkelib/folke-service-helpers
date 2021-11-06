@@ -5,16 +5,29 @@ export class MapLoader<TValue, TParameters> {
     @observable protected cache = new Map<string, TValue | null>();
     private loadingParameters = new Map<string, boolean>();
     private authorizationHeader?: string | null;
-    
-    constructor(private loader: (parameters: TParameters) => Promise<{ value: TValue, status: number }>, private userManager?: UserManager, private onChange?: (value: TValue) => void) {
-        if (userManager) this.authorizationHeader = userManager.authorizationHeader;
+
+    constructor(
+        private loader: (
+            parameters: TParameters
+        ) => Promise<{ value: TValue; status: number }>,
+        private userManager?: UserManager,
+        private onChange?: (value: TValue) => void
+    ) {
+        if (userManager)
+            this.authorizationHeader = userManager.authorizationHeader;
     }
 
     /** Call this only in a @computed or in a render() with @observer */
     getValue(parameters: TParameters): TValue | null {
         const serialized = JSON.stringify(parameters);
         const cache = this.cache.get(serialized);
-        if (cache && (this.userManager === undefined || this.userManager.authorizationHeader === this.authorizationHeader || this.userManager.authorizationHeader === null)) {
+        if (
+            cache &&
+            (this.userManager === undefined ||
+                this.userManager.authorizationHeader ===
+                    this.authorizationHeader ||
+                this.userManager.authorizationHeader === null)
+        ) {
             return cache;
         }
         if (this.loadingParameters.get(serialized)) return cache || null;
@@ -23,9 +36,10 @@ export class MapLoader<TValue, TParameters> {
     }
 
     private load(id: TParameters, serialized: string) {
-        if (this.userManager) this.authorizationHeader = this.userManager.authorizationHeader;
+        if (this.userManager)
+            this.authorizationHeader = this.userManager.authorizationHeader;
         this.loadingParameters.set(serialized, true);
-        this.loader(id).then(({ value, status} ) => {
+        this.loader(id).then(({ value, status }) => {
             if (status >= 400) {
                 this.setValue(null, serialized);
             } else {
@@ -44,13 +58,15 @@ export class MapLoader<TValue, TParameters> {
     getCached(filter?: (x: TParameters) => boolean): [TParameters, TValue][] {
         const result: [TParameters, TValue][] = Array.from(this.cache)
             .filter(([_, value]) => value !== null)
-            .map(([key, value]) => ([JSON.parse(key) as TParameters, value!]));
+            .map(([key, value]) => [JSON.parse(key) as TParameters, value!]);
         if (filter) return result.filter(([x]) => filter(x));
         return result;
     }
 
     getCachedValues(): TValue[] {
-        return Array.from(this.cache.values()).filter(x => x !== null) as TValue[];
+        return Array.from(this.cache.values()).filter(
+            (x) => x !== null
+        ) as TValue[];
     }
 
     updateCache(parameters: TParameters, value: TValue) {
