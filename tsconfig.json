@@ -1,17 +1,13 @@
 {
-  "compilerOptions": {
-    "target": "es2015",    
-    "module": "commonjs",
-    "strict": true,
-    "declaration": true,
-    "experimentalDecorators": true,
-    "inlineSourceMap": true,
-    "esModuleInterop": true,
-    "jsx": "react",
-    "lib": [
-      "es2015",
-      "dom"
-    ],
-    "skipLibCheck": true // because of signalr
-  }
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "commonjs",
+        "strict": true,
+        "declaration": true,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "jsx": "react",
+        "lib": ["es2015", "dom"],
+        "skipLibCheck": true // because of signalr
+    }
 }
