@@ -1,6 +1,6 @@
 {
     "name": "folke-service-helpers",
-    "version": "3.5.2",
+    "version": "3.5.3",
     "main": "index.js",
     "license": "MIT",
     "scripts": {
