@@ -6,6 +6,5 @@ node_modules
 !.yarn/sdks
 !.yarn/versions
 *.js
-*.d.ts
 *.js.map
 *.d.ts

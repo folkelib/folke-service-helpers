@@ -1,7 +1,8 @@
 yarn.lock
 tslint.json
 tsconfig.json
-*.tsx?
+*.ts
+*.tsx
 !*.d.ts
 .prettierrc.json
 .yarnrc.yml
