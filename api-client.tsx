@@ -1,4 +1,5 @@
-import { UserManager } from "./user-manager";
+import React, { createContext, ReactNode, useContext, useMemo } from "react";
+import { AuthorizeContext, AuthorizeService } from "./authorize/authorize";
 
 export type Data =
     | Blob
@@ -34,14 +35,14 @@ export interface ApiClient {
     ): Promise<ApiResponse<TD>>;
 }
 
+interface ApiClientOptions {
+    onQueryStart?: () => void;
+    onQueryEnd?: () => void;
+    userManager?: AuthorizeService;
+}
+
 export class SimpleApiClient implements ApiClient {
-    constructor(
-        private options?: {
-            onQueryStart?: () => void;
-            onQueryEnd?: () => void;
-            userManager?: UserManager;
-        }
-    ) {}
+    constructor(private options?: ApiClientOptions) {}
 
     /** Fetches an url that returns one value */
     async fetchJson<TD>(
@@ -88,18 +89,19 @@ export class SimpleApiClient implements ApiClient {
 }
 
 /** Creates a guery string from a list of parameters. Starts with a ? */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getQueryString(parameters?: { [key: string]: any }) {
-    var parametersList: string[] = [];
+    const parametersList: string[] = [];
 
     if (parameters) {
-        for (var key in parameters) {
-            var value = parameters[key];
+        for (const key in parameters) {
+            let value = parameters[key];
             if (value == undefined) continue;
             if (value instanceof Date) value = value.toISOString();
             parametersList.push(key + "=" + encodeURIComponent(value));
         }
     }
-    var ret: string;
+    let ret: string;
 
     if (parametersList.length > 0) {
         ret = "?" + parametersList.join("&");
@@ -137,4 +139,22 @@ export async function parseErrors(
         default:
             return errorMessages.unknownError;
     }
+}
+
+const ApiClientContext = createContext<ApiClient>(new SimpleApiClient());
+
+export function ApiClientProvider({ children }: { children: ReactNode }) {
+    const userManager = useContext(AuthorizeContext) ?? undefined;
+    const apiClient = useMemo(() => {
+        return new SimpleApiClient({ userManager });
+    }, [userManager]);
+    return (
+        <ApiClientContext.Provider value={apiClient}>
+            {children}
+        </ApiClientContext.Provider>
+    );
+}
+
+export function useApiClient() {
+    return useContext(ApiClientContext);
 }

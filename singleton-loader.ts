@@ -1,6 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { ApiResponse } from "./api-client";
-import { UserManager } from "./user-manager";
+import { AuthorizeService } from "./authorize/authorize";
 
 export class SingletonLoader<TValue> {
     @observable cache: TValue | null = null;
@@ -11,7 +11,7 @@ export class SingletonLoader<TValue> {
 
     constructor(
         private loader: () => Promise<ApiResponse<TValue>>,
-        private userManager?: UserManager,
+        private userManager?: AuthorizeService,
         private onChange?: (value: TValue) => void
     ) {
         if (userManager) {

@@ -1,5 +1,5 @@
 import { observable, action } from "mobx";
-import { UserManager } from "./user-manager";
+import { AuthorizeService } from "./authorize/authorize";
 
 export class MapLoader<TValue, TParameters> {
     @observable protected cache = new Map<string, TValue | null>();
@@ -10,7 +10,7 @@ export class MapLoader<TValue, TParameters> {
         private loader: (
             parameters: TParameters
         ) => Promise<{ value: TValue; status: number }>,
-        private userManager?: UserManager,
+        private userManager?: AuthorizeService,
         private onChange?: (value: TValue) => void
     ) {
         if (userManager)
@@ -58,6 +58,7 @@ export class MapLoader<TValue, TParameters> {
     getCached(filter?: (x: TParameters) => boolean): [TParameters, TValue][] {
         const result: [TParameters, TValue][] = Array.from(this.cache)
             .filter(([_, value]) => value !== null)
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             .map(([key, value]) => [JSON.parse(key) as TParameters, value!]);
         if (filter) return result.filter(([x]) => filter(x));
         return result;

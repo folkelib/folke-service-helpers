@@ -14,6 +14,6 @@ __exportStar(require("./api-client"), exports);
 __exportStar(require("./array-loader"), exports);
 __exportStar(require("./map-loader"), exports);
 __exportStar(require("./singleton-loader"), exports);
-__exportStar(require("./user-manager"), exports);
+__exportStar(require("./authorize"), exports);
 __exportStar(require("./value-loader"), exports);
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFBQSwrQ0FBNkI7QUFDN0IsaURBQStCO0FBQy9CLCtDQUE2QjtBQUM3QixxREFBbUM7QUFDbkMsaURBQStCO0FBQy9CLGlEQUErQiJ9
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFBQSwrQ0FBNkI7QUFDN0IsaURBQStCO0FBQy9CLCtDQUE2QjtBQUM3QixxREFBbUM7QUFDbkMsOENBQTRCO0FBQzVCLGlEQUErQiJ9

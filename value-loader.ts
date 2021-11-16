@@ -1,7 +1,7 @@
 import { observable, action, computed } from "mobx";
-import { UserManager } from "./user-manager";
 import { ApiResponse } from "./api-client";
 import * as signalR from "@microsoft/signalr";
+import { AuthorizeService } from "./authorize/authorize";
 
 /** This class allows to load a value with a given parameter. It keep in cache only one value.
  * If you want to keep several values in cache, use MapLoader.
@@ -17,7 +17,7 @@ export class ValueLoader<TValue, TParameters> {
         private loader: (
             parameters: TParameters
         ) => Promise<ApiResponse<TValue>>,
-        private userManager?: UserManager,
+        private userManager?: AuthorizeService,
         private onChange?: (value: TValue) => void
     ) {
         this.userToken = userManager ? userManager.authorizationHeader : null;
@@ -101,7 +101,7 @@ export class ValueLoaderSync<TValue, TParameters> extends ValueLoader<
         private connection: signalR.HubConnection,
         identifier: string,
         loader: (parameters: TParameters) => Promise<ApiResponse<TValue>>,
-        userManager?: UserManager,
+        userManager?: AuthorizeService,
         onChange?: (value: TValue) => void
     ) {
         super(

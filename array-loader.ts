@@ -1,5 +1,5 @@
 import { observable, action } from "mobx";
-import { UserManager } from "./user-manager";
+import { AuthorizeService } from ".";
 import { ApiResponse } from "./api-client";
 
 export interface HasId {
@@ -16,7 +16,7 @@ export class ArrayLoader<T extends HasId, TParameters> {
     constructor(
         cache: T[] | undefined,
         private loader: (parameters: TParameters) => Promise<ApiResponse<T[]>>,
-        private userManager?: UserManager,
+        private userManager?: AuthorizeService,
         private onItemLoaded?: (value: T) => void
     ) {
         this.cache = cache || observable([]);
@@ -121,7 +121,7 @@ export class ArrayLoaderSync<T extends HasId, TParameters> extends ArrayLoader<
         private connection: signalR.HubConnection,
         identifier: string,
         loader: (parameters: TParameters) => Promise<ApiResponse<T[]>>,
-        userStore?: UserManager,
+        userStore?: AuthorizeService,
         cache?: T[],
         onItemLoaded?: (value: T) => void
     ) {
@@ -143,17 +143,17 @@ export class ArrayLoaderSync<T extends HasId, TParameters> extends ArrayLoader<
         );
         this.connection.on(
             `Add${identifier}`,
-            (updatedValue: T, p: TParameters) => {
+            (updatedValue: T, _: TParameters) => {
                 this.addValue(updatedValue);
             }
         );
         this.connection.on(
             `Update${identifier}`,
-            (updatedValue: T, p: TParameters) => this.updateValue(updatedValue)
+            (updatedValue: T, _: TParameters) => this.updateValue(updatedValue)
         );
         this.connection.on(
             `Delete${identifier}`,
-            (deleteValue: T, p: TParameters) => this.deleteValue(deleteValue)
+            (deleteValue: T, _: TParameters) => this.deleteValue(deleteValue)
         );
     }
 }
