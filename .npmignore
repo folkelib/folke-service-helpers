@@ -8,4 +8,5 @@ tsconfig.json
 .yarn
 .vscode
 .pnp.cjs
+.pnp.loader.mjs
 tslint.json

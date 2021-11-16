@@ -4,7 +4,7 @@ import { Login } from "./login";
 import Logout from "./logout";
 import { LoginActions, LogoutActions } from "./authorize";
 
-function ApiAuthorizationRoutes() {
+export function ApiAuthorizationRoutes() {
     return (
         <Routes>
             <Route path="/">
@@ -46,5 +46,3 @@ function ApiAuthorizationRoutes() {
         </Routes>
     );
 }
-
-export default ApiAuthorizationRoutes;
