@@ -1,12 +1,12 @@
 {
     "name": "folke-service-helpers",
-    "version": "3.4.0",
+    "version": "3.5.0",
     "main": "index.js",
     "license": "MIT",
     "scripts": {
         "build": "tsc",
         "watch": "tsc -w",
-        "release": "lint && prettier && build && standard-version",
+        "release": "yarn lint && yarn prettier && yarn build && standard-version",
         "lint": "eslint --ext .ts,.tsx .",
         "prettier": "prettier --write \"**/*.{ts,less,tsx}\""
     },
