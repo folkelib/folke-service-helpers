@@ -8,6 +8,8 @@
         "esModuleInterop": true,
         "jsx": "react",
         "lib": ["es2015", "dom"],
-        "skipLibCheck": true // because of signalr
+        "rootDir": "src",
+        "outDir": "dist",
+        "skipLibCheck": true
     }
 }

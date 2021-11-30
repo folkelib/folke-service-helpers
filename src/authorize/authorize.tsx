@@ -153,15 +153,19 @@ export class AuthorizeService {
         return user && user.access_token;
     }
 
-    get identifier() {
+    get serializedAccessToken() {
         return this.user && this.user.access_token;
     }
 
     get accessToken() {
-        const identifier = this.identifier;
-        if (!identifier) return undefined;
-        const [, payload] = identifier.split(".");
+        const serializedAccessToken = this.serializedAccessToken;
+        if (!serializedAccessToken) return undefined;
+        const [, payload] = serializedAccessToken.split(".");
         return JSON.parse(atob(payload)) as AccessToken;
+    }
+
+    get identifier() {
+        return this.accessToken?.sub;
     }
 
     // We try to authenticate the user in three different ways:

@@ -1,12 +1,13 @@
 import { observable, action, computed } from "mobx";
-import { ApiResponse } from "./api-client";
+import { ApiResponse } from "../api-client";
 import * as signalR from "@microsoft/signalr";
-import { AuthorizeService } from "./authorize/authorize";
+import { AuthorizeService } from "../authorize/authorize";
+import { LoaderOptions, LoaderResponse } from "./options";
 
 /** This class allows to load a value with a given parameter. It keep in cache only one value.
  * If you want to keep several values in cache, use MapLoader.
  */
-export class ValueLoader<TValue, TParameters> {
+export class ValueLoader<TValue, TParameters extends unknown[]> {
     @observable cache: TValue | null = null;
     @observable private loadedParameters: string | null = null;
     private loadingParameters: string | null = null;
@@ -15,16 +16,16 @@ export class ValueLoader<TValue, TParameters> {
 
     constructor(
         private loader: (
-            parameters: TParameters
-        ) => Promise<ApiResponse<TValue>>,
+            ...parameters: TParameters
+        ) => Promise<LoaderResponse<TValue>>,
         private userManager?: AuthorizeService,
-        private onChange?: (value: TValue) => void
+        private options?: LoaderOptions<TValue>
     ) {
         this.userToken = userManager ? userManager.authorizationHeader : null;
     }
 
     /** Call this only in a @computed or in a render() with @observer */
-    getValue(parameters: TParameters): TValue | null {
+    getValue(...parameters: TParameters): TValue | null {
         const serialized = JSON.stringify(parameters);
         if (
             this.loadedParameters === serialized &&
@@ -53,7 +54,7 @@ export class ValueLoader<TValue, TParameters> {
         if (this.userManager)
             this.userToken = this.userManager.authorizationHeader;
         this.loadingParameters = serialized;
-        this.loader(id).then((x) => {
+        this.loader(...id).then((x) => {
             if (!x.ok) {
                 this.setValue(null, serialized);
             } else {
@@ -86,26 +87,26 @@ export class ValueLoader<TValue, TParameters> {
             this.cache = value;
             this.loadingParameters = null;
             this.loadedParameters = value ? serialized : null;
-            if (this.onChange && value) this.onChange(value);
+            if (this.options?.onChange && value) this.options.onChange(value);
         }
     }
 }
 
-export class ValueLoaderSync<TValue, TParameters> extends ValueLoader<
+export class ValueLoaderSync<
     TValue,
-    TParameters
-> {
+    TParameters extends unknown[]
+> extends ValueLoader<TValue, TParameters> {
     private previousParameters: TParameters | undefined;
 
     constructor(
         private connection: signalR.HubConnection,
         identifier: string,
-        loader: (parameters: TParameters) => Promise<ApiResponse<TValue>>,
+        loader: (...parameters: TParameters) => Promise<ApiResponse<TValue>>,
         userManager?: AuthorizeService,
-        onChange?: (value: TValue) => void
+        options?: LoaderOptions<TValue>
     ) {
         super(
-            async (parameters: TParameters) => {
+            async (...parameters: TParameters) => {
                 if (this.previousParameters)
                     this.connection.invoke(
                         `Close${identifier}`,
@@ -113,10 +114,10 @@ export class ValueLoaderSync<TValue, TParameters> extends ValueLoader<
                     );
                 this.previousParameters = parameters;
                 this.connection.invoke(`Open${identifier}`, parameters);
-                return loader(parameters);
+                return loader(...parameters);
             },
             userManager,
-            onChange
+            options
         );
         this.connection.on(
             `Update${identifier}`,

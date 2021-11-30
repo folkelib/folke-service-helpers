@@ -1,6 +1,6 @@
 import { observable, action, computed } from "mobx";
-import { ApiResponse } from "./api-client";
-import { AuthorizeService } from "./authorize/authorize";
+import { AuthorizeService } from "..";
+import { LoaderOptions, LoaderResponse } from "./options";
 
 export class SingletonLoader<TValue> {
     @observable cache: TValue | null = null;
@@ -10,9 +10,9 @@ export class SingletonLoader<TValue> {
     allowNotIdentified = false;
 
     constructor(
-        private loader: () => Promise<ApiResponse<TValue>>,
+        private loader: () => Promise<LoaderResponse<TValue>>,
         private userManager?: AuthorizeService,
-        private onChange?: (value: TValue) => void
+        private options?: LoaderOptions<TValue>
     ) {
         if (userManager) {
             this.userToken = userManager.authorizationHeader;
@@ -81,7 +81,7 @@ export class SingletonLoader<TValue> {
             this.cache = value;
             this.loading = false;
             this.loaded = true;
-            if (this.onChange && value) this.onChange(value);
+            if (this.options?.onChange && value) this.options.onChange(value);
         }
     }
 }

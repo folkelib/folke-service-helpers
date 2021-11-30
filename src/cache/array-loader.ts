@@ -1,6 +1,7 @@
 import { observable, action } from "mobx";
-import { AuthorizeService } from ".";
-import { ApiResponse } from "./api-client";
+import { AuthorizeService } from "..";
+import { ApiResponse } from "../api-client";
+import { LoaderOptions, LoaderResponse } from "./options";
 
 export interface HasId {
     id: number;
@@ -15,9 +16,11 @@ export class ArrayLoader<T extends HasId, TParameters> {
 
     constructor(
         cache: T[] | undefined,
-        private loader: (parameters: TParameters) => Promise<ApiResponse<T[]>>,
+        private loader: (
+            parameters: TParameters
+        ) => Promise<LoaderResponse<T[]>>,
         private userManager?: AuthorizeService,
-        private onItemLoaded?: (value: T) => void
+        private options?: LoaderOptions<T>
     ) {
         this.cache = cache || observable([]);
         this.authorizationHeader = userManager
@@ -68,7 +71,7 @@ export class ArrayLoader<T extends HasId, TParameters> {
         if (!existing) {
             const length = this.cache.push(value);
             const added = this.cache[length - 1];
-            this.onItemLoaded && this.onItemLoaded(added);
+            this.options?.onChange && this.options.onChange(added);
             this.result.push(added);
         } else {
             Object.assign(existing, value);
@@ -123,7 +126,7 @@ export class ArrayLoaderSync<T extends HasId, TParameters> extends ArrayLoader<
         loader: (parameters: TParameters) => Promise<ApiResponse<T[]>>,
         userStore?: AuthorizeService,
         cache?: T[],
-        onItemLoaded?: (value: T) => void
+        options?: LoaderOptions<T>
     ) {
         super(
             cache,
@@ -139,7 +142,7 @@ export class ArrayLoaderSync<T extends HasId, TParameters> extends ArrayLoader<
                 return loader(parameters);
             },
             userStore,
-            onItemLoaded
+            options
         );
         this.connection.on(
             `Add${identifier}`,
