@@ -1,20 +1,19 @@
 import { observable, action, makeObservable } from "mobx";
-import { AuthorizeService } from "../authorize";
+import { UserStore } from "../authorize";
 import { LoaderOptions, LoaderResponse } from "./options";
 
 export class MapLoader<TValue, TParameters extends unknown[]> {
     public cache = new Map<string, TValue | null>();
     private loadingParameters = new Map<string, boolean>();
-    public userIdentifier?: string | null;
+    public userIdentifier?: string | null = null;
 
     constructor(
         private loader: (
             ...parameters: TParameters
         ) => Promise<LoaderResponse<TValue>>,
-        private userManager?: AuthorizeService,
+        private userManager?: UserStore,
         private options?: LoaderOptions<TValue>
     ) {
-        this.userIdentifier = userManager?.identifier;
         makeObservable(this, {
             userIdentifier: observable,
             cache: options?.readonly ? observable.shallow : observable,

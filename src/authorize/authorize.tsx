@@ -90,7 +90,12 @@ export type ReturnStatus =
     | { status: "success"; state: SigninState }
     | { status: "redirect" };
 
-export class AuthorizeService {
+export interface UserStore {
+    identifier: string | null;
+    authorizationHeader: string | null;
+}
+
+export class AuthorizeService implements UserStore {
     _callbacks: Callback[] = [];
     _nextSubscriptionId = 0;
     public user: User | null = null;
@@ -140,7 +145,11 @@ export class AuthorizeService {
     }
 
     get authorizationHeader() {
-        return this.user && `Bearer ${this.user.access_token}`;
+        return (
+            this.user &&
+            this.user.access_token &&
+            `Bearer ${this.user.access_token}`
+        );
     }
 
     async getAuthorizationHeader() {
@@ -165,7 +174,7 @@ export class AuthorizeService {
     }
 
     get identifier() {
-        return this.accessToken?.sub;
+        return this.accessToken?.sub ?? null;
     }
 
     // We try to authenticate the user in three different ways:

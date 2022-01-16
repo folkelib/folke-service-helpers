@@ -72,15 +72,18 @@ export class SimpleApiClient implements ApiClient {
         const headers = new Headers();
         headers.append("Accept", "application/json");
         headers.append("Content-Type", "application/json");
+        let credentials: RequestCredentials = "same-origin";
         if (this.options && this.options.userManager) {
             const authorizationHeader =
                 await this.options.userManager.getAuthorizationHeader();
-            if (authorizationHeader)
+            if (authorizationHeader) {
                 headers.append("Authorization", authorizationHeader);
+                credentials = "omit";
+            }
         }
         const requestInit: RequestInit = {
             method: method,
-            credentials: "same-origin",
+            credentials,
             headers: headers,
         };
         if (data != undefined) requestInit.body = data;
