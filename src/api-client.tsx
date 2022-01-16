@@ -1,5 +1,12 @@
-import React, { createContext, ReactNode, useContext, useMemo } from "react";
-import { AuthorizeContext, AuthorizeService } from "./authorize/authorize";
+import { observer } from "mobx-react-lite";
+import React, {
+    createContext,
+    ReactNode,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+import { AuthorizeContext } from "./authorize/authorize";
 
 export type Data =
     | Blob
@@ -38,10 +45,11 @@ export interface ApiClient {
 interface ApiClientOptions {
     onQueryStart?: () => void;
     onQueryEnd?: () => void;
-    userManager?: AuthorizeService;
 }
 
 export class SimpleApiClient implements ApiClient {
+    public authorizationHeader: string | null = null;
+
     constructor(private options?: ApiClientOptions) {}
 
     /** Fetches an url that returns one value */
@@ -73,13 +81,9 @@ export class SimpleApiClient implements ApiClient {
         headers.append("Accept", "application/json");
         headers.append("Content-Type", "application/json");
         let credentials: RequestCredentials = "same-origin";
-        if (this.options && this.options.userManager) {
-            const authorizationHeader =
-                await this.options.userManager.getAuthorizationHeader();
-            if (authorizationHeader) {
-                headers.append("Authorization", authorizationHeader);
-                credentials = "omit";
-            }
+        if (this.authorizationHeader) {
+            headers.append("Authorization", this.authorizationHeader);
+            credentials = "omit";
         }
         const requestInit: RequestInit = {
             method: method,
@@ -146,17 +150,27 @@ export async function parseErrors(
 
 const ApiClientContext = createContext<ApiClient>(new SimpleApiClient());
 
-export function ApiClientProvider({ children }: { children: ReactNode }) {
-    const userManager = useContext(AuthorizeContext) ?? undefined;
-    const apiClient = useMemo(() => {
-        return new SimpleApiClient({ userManager });
-    }, [userManager]);
+export const ApiClientProvider = observer(function ApiClientProvider({
+    children,
+}: {
+    children: ReactNode;
+}) {
+    const userManager = useContext(AuthorizeContext);
+    const [apiClient] = useState(() => new SimpleApiClient());
+
+    const authorizationHeader = userManager
+        ? userManager.authorizationHeader
+        : null;
+    useEffect(() => {
+        apiClient.authorizationHeader = authorizationHeader;
+    }, [authorizationHeader]);
+
     return (
         <ApiClientContext.Provider value={apiClient}>
             {children}
         </ApiClientContext.Provider>
     );
-}
+});
 
 export function useApiClient() {
     return useContext(ApiClientContext);
