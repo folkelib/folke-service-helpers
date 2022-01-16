@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.6.2](https://github.com/folkelib/folke-service-helpers/compare/v3.6.1...v3.6.2) (2022-01-16)
+
+
+### Bug Fixes
+
+* apiClientProvider wasn't working ([a0809c6](https://github.com/folkelib/folke-service-helpers/commit/a0809c69c8485686f2d46cde6b037b77885ef767))
+
 ### [3.6.1](https://github.com/folkelib/folke-service-helpers/compare/v3.6.0...v3.6.1) (2022-01-16)
 
 
