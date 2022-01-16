@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.6.1](https://github.com/folkelib/folke-service-helpers/compare/v3.6.0...v3.6.1) (2022-01-16)
+
+
+### Bug Fixes
+
+* omit cookies from API ([e014893](https://github.com/folkelib/folke-service-helpers/commit/e0148938a043bb8465ca1602b51b7ce3eb2e3a5f))
+
 ## [3.6.0](https://github.com/folkelib/folke-service-helpers/compare/v3.5.5...v3.6.0) (2021-11-30)
 
 
