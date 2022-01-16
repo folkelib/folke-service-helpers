@@ -58,6 +58,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-router-dom", "virtual:926a3bd2bc7bba1394f1f3b1ee99c016b07537c1376c8ceba79301d03ba4ec455c7bd26c4186650d2833a219bf382f85d9eabd2ae8ca236fdb6ead0ae199e704#npm:6.0.2"],
             ["standard-version", "npm:9.3.2"],
             ["ts-jest", "virtual:926a3bd2bc7bba1394f1f3b1ee99c016b07537c1376c8ceba79301d03ba4ec455c7bd26c4186650d2833a219bf382f85d9eabd2ae8ca236fdb6ead0ae199e704#npm:27.0.7"],
+            ["typemoq", "npm:2.1.0"],
             ["typescript", "patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"]
           ],
           "linkType": "SOFT",
@@ -2903,6 +2904,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["circular-json", [
+        ["npm:0.3.3", {
+          "packageLocation": "./.yarn/cache/circular-json-npm-0.3.3-c8df2de693-61c5e5c244.zip/node_modules/circular-json/",
+          "packageDependencies": [
+            ["circular-json", "npm:0.3.3"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["cjs-module-lexer", [
         ["npm:1.2.2", {
           "packageLocation": "./.yarn/cache/cjs-module-lexer-npm-1.2.2-473ce063ea-977f3f042b.zip/node_modules/cjs-module-lexer/",
@@ -4264,6 +4274,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-router-dom", "virtual:926a3bd2bc7bba1394f1f3b1ee99c016b07537c1376c8ceba79301d03ba4ec455c7bd26c4186650d2833a219bf382f85d9eabd2ae8ca236fdb6ead0ae199e704#npm:6.0.2"],
             ["standard-version", "npm:9.3.2"],
             ["ts-jest", "virtual:926a3bd2bc7bba1394f1f3b1ee99c016b07537c1376c8ceba79301d03ba4ec455c7bd26c4186650d2833a219bf382f85d9eabd2ae8ca236fdb6ead0ae199e704#npm:27.0.7"],
+            ["typemoq", "npm:2.1.0"],
             ["typescript", "patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"]
           ],
           "linkType": "SOFT",
@@ -7002,6 +7013,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["postinstall-build", [
+        ["npm:5.0.3", {
+          "packageLocation": "./.yarn/cache/postinstall-build-npm-5.0.3-cb37fb6ea8-91f4e2182f.zip/node_modules/postinstall-build/",
+          "packageDependencies": [
+            ["postinstall-build", "npm:5.0.3"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["prelude-ls", [
         ["npm:1.1.2", {
           "packageLocation": "./.yarn/cache/prelude-ls-npm-1.1.2-a0daac0886-c4867c8748.zip/node_modules/prelude-ls/",
@@ -8444,6 +8464,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["typedarray-to-buffer", "npm:3.1.5"],
             ["is-typedarray", "npm:1.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["typemoq", [
+        ["npm:2.1.0", {
+          "packageLocation": "./.yarn/unplugged/typemoq-npm-2.1.0-09e352b03c/node_modules/typemoq/",
+          "packageDependencies": [
+            ["typemoq", "npm:2.1.0"],
+            ["circular-json", "npm:0.3.3"],
+            ["lodash", "npm:4.17.21"],
+            ["postinstall-build", "npm:5.0.3"]
           ],
           "linkType": "HARD",
         }]

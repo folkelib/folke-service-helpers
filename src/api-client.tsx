@@ -1,12 +1,5 @@
-import { observer } from "mobx-react-lite";
-import React, {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
-import { AuthorizeContext } from "./authorize/authorize";
+import React, { createContext, ReactNode, useContext, useMemo } from "react";
+import { AuthorizeContext, AuthorizeService } from "./authorize/authorize";
 
 export type Data =
     | Blob
@@ -48,9 +41,10 @@ interface ApiClientOptions {
 }
 
 export class SimpleApiClient implements ApiClient {
-    public authorizationHeader: string | null = null;
-
-    constructor(private options?: ApiClientOptions) {}
+    constructor(
+        private authorizeService: AuthorizeService | null,
+        private options?: ApiClientOptions
+    ) {}
 
     /** Fetches an url that returns one value */
     async fetchJson<TD>(
@@ -81,8 +75,14 @@ export class SimpleApiClient implements ApiClient {
         headers.append("Accept", "application/json");
         headers.append("Content-Type", "application/json");
         let credentials: RequestCredentials = "same-origin";
-        if (this.authorizationHeader) {
-            headers.append("Authorization", this.authorizationHeader);
+        if (
+            this.authorizeService &&
+            this.authorizeService.authorizationHeader
+        ) {
+            headers.append(
+                "Authorization",
+                this.authorizeService.authorizationHeader
+            );
             credentials = "omit";
         }
         const requestInit: RequestInit = {
@@ -148,30 +148,23 @@ export async function parseErrors(
     }
 }
 
-const ApiClientContext = createContext<ApiClient>(new SimpleApiClient());
+export const ApiClientContext = createContext<ApiClient | null>(null);
 
-export const ApiClientProvider = observer(function ApiClientProvider({
-    children,
-}: {
-    children: ReactNode;
-}) {
-    const userManager = useContext(AuthorizeContext);
-    const [apiClient] = useState(() => new SimpleApiClient());
-
-    const authorizationHeader = userManager
-        ? userManager.authorizationHeader
-        : null;
-    useEffect(() => {
-        apiClient.authorizationHeader = authorizationHeader;
-    }, [authorizationHeader]);
-
+export function ApiClientProvider({ children }: { children: ReactNode }) {
+    const authorizeService = useContext(AuthorizeContext);
+    const apiClient = useMemo(() => {
+        return new SimpleApiClient(authorizeService);
+    }, [authorizeService]);
     return (
         <ApiClientContext.Provider value={apiClient}>
             {children}
         </ApiClientContext.Provider>
     );
-});
+}
 
 export function useApiClient() {
-    return useContext(ApiClientContext);
+    const apiClient = useContext(ApiClientContext);
+    if (apiClient === null)
+        throw new Error("useApiClient must be used inside ApiClientProvider");
+    return apiClient;
 }
