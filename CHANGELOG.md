@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.6.7](https://github.com/folkelib/folke-service-helpers/compare/v3.6.6...v3.6.7) (2022-10-19)
+
+
+### Bug Fixes
+
+* add makeObservable(this) ([447fdfa](https://github.com/folkelib/folke-service-helpers/commit/447fdfa91626d7771f610b14fdc2e6ab747c2ec5))
+
 ### [3.6.6](https://github.com/folkelib/folke-service-helpers/compare/v3.6.5...v3.6.6) (2022-10-19)
 
 ### [3.6.5](https://github.com/folkelib/folke-service-helpers/compare/v3.6.4...v3.6.5) (2022-10-16)
