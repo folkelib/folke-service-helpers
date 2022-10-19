@@ -1,4 +1,4 @@
-import { observable, action } from "mobx";
+import { observable, action, makeObservable } from "mobx";
 import { AuthorizeService } from "..";
 import { ApiResponse } from "../api-client";
 import { LoaderOptions, LoaderResponse } from "./options";
@@ -22,6 +22,7 @@ export class ArrayLoader<T extends HasId, TParameters> {
         private userManager?: AuthorizeService,
         private options?: LoaderOptions<T>
     ) {
+        makeObservable(this);
         this.cache = cache || observable([]);
         this.authorizationHeader = userManager
             ? userManager.authorizationHeader

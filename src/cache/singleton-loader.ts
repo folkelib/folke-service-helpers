@@ -1,4 +1,4 @@
-import { observable, action, computed } from "mobx";
+import { observable, action, computed, makeObservable } from "mobx";
 import { AuthorizeService } from "..";
 import { LoaderOptions, LoaderResponse } from "./options";
 
@@ -14,6 +14,7 @@ export class SingletonLoader<TValue> {
         private userManager?: AuthorizeService,
         private options?: LoaderOptions<TValue>
     ) {
+        makeObservable(this);
         if (userManager) {
             this.userToken = userManager.authorizationHeader;
         } else {

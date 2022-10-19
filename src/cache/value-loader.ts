@@ -1,4 +1,4 @@
-import { observable, action, computed } from "mobx";
+import { observable, action, computed, makeObservable } from "mobx";
 import { ApiResponse } from "../api-client";
 import * as signalR from "@microsoft/signalr";
 import { AuthorizeService } from "../authorize/authorize";
@@ -21,6 +21,7 @@ export class ValueLoader<TValue, TParameters extends unknown[]> {
         private userManager?: AuthorizeService,
         private options?: LoaderOptions<TValue>
     ) {
+        makeObservable(this);
         this.userToken = userManager ? userManager.authorizationHeader : null;
     }
 
