@@ -14,7 +14,7 @@ export function ProviderList({
     return (
         <Provider>
             <ProviderList providers={providers.slice(1)}>
-                {children}         
+                {children}
             </ProviderList>
         </Provider>
     );
