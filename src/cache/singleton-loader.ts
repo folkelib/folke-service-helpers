@@ -12,7 +12,7 @@ export class SingletonLoader<TValue> {
     constructor(
         private loader: () => Promise<LoaderResponse<TValue>>,
         private userManager?: AuthorizeService,
-        private options?: LoaderOptions<TValue>
+        private options?: LoaderOptions<TValue>,
     ) {
         makeObservable(this);
         if (userManager) {

@@ -7,12 +7,12 @@ import { useAuthorize } from "./authorize";
 
 function LoginDropdown({ children }: { children: ReactNode }) {
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-        null
+        null,
     );
     const handleClick = useCallback(
         (e: React.MouseEvent<HTMLButtonElement>) =>
             setAnchorEl(e.currentTarget),
-        []
+        [],
     );
     const handleClose = useCallback(() => setAnchorEl(null), []);
     return (

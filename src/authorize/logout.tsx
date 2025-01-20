@@ -37,7 +37,7 @@ function Logout({ action }: LogoutProps) {
                         break;
                     default:
                         throw new Error(
-                            "Invalid authentication result status."
+                            "Invalid authentication result status.",
                         );
                 }
             } else {
@@ -78,7 +78,7 @@ function Logout({ action }: LogoutProps) {
                 if (!fromQuery.startsWith(`${window.location.origin}/`)) {
                     // This is an extra check to prevent open redirects.
                     throw new Error(
-                        "Invalid return url. The return url needs to have the same origin as the current page."
+                        "Invalid return url. The return url needs to have the same origin as the current page.",
                     );
                 }
                 return fromQuery.replace(window.location.origin, "");

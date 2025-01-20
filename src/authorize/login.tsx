@@ -60,7 +60,7 @@ export const Login = observer(({ loginAction }: LoginProps) => {
             ) {
                 // This is an extra check to prevent open redirects.
                 throw new Error(
-                    "Invalid return url. The return url needs to have the same origin as the current page."
+                    "Invalid return url. The return url needs to have the same origin as the current page.",
                 );
             }
             return (
@@ -73,12 +73,12 @@ export const Login = observer(({ loginAction }: LoginProps) => {
             store.redirectToApiAuthorizationPath(
                 `${authorizeService.applicationPaths.identityRegisterPath}?${
                     QueryParameterNames.ReturnUrl
-                }=${encodeURI(authorizeService.applicationPaths.login)}`
+                }=${encodeURI(authorizeService.applicationPaths.login)}`,
             );
         },
         redirectToProfile() {
             store.redirectToApiAuthorizationPath(
-                authorizeService.applicationPaths.identityManagePath
+                authorizeService.applicationPaths.identityManagePath,
             );
         },
         redirectToApiAuthorizationPath(apiAuthorizationPath: string) {

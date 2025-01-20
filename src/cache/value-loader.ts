@@ -19,7 +19,7 @@ export class ValueLoader<TValue, TParameters extends unknown[]> {
             ...parameters: TParameters
         ) => Promise<LoaderResponse<TValue>>,
         private userManager?: AuthorizeService,
-        private options?: LoaderOptions<TValue>
+        private options?: LoaderOptions<TValue>,
     ) {
         makeObservable(this);
         this.userToken = userManager ? userManager.authorizationHeader : null;
@@ -69,7 +69,7 @@ export class ValueLoader<TValue, TParameters extends unknown[]> {
         if (this.loadedParameters)
             this.load(
                 JSON.parse(this.loadedParameters) as TParameters,
-                this.loadedParameters
+                this.loadedParameters,
             );
     }
 
@@ -95,7 +95,7 @@ export class ValueLoader<TValue, TParameters extends unknown[]> {
 
 export class ValueLoaderSync<
     TValue,
-    TParameters extends unknown[]
+    TParameters extends unknown[],
 > extends ValueLoader<TValue, TParameters> {
     private previousParameters: TParameters | undefined;
 
@@ -104,29 +104,29 @@ export class ValueLoaderSync<
         identifier: string,
         loader: (...parameters: TParameters) => Promise<ApiResponse<TValue>>,
         userManager?: AuthorizeService,
-        options?: LoaderOptions<TValue>
+        options?: LoaderOptions<TValue>,
     ) {
         super(
             async (...parameters: TParameters) => {
                 if (this.previousParameters)
                     this.connection.invoke(
                         `Close${identifier}`,
-                        this.previousParameters
+                        this.previousParameters,
                     );
                 this.previousParameters = parameters;
                 this.connection.invoke(`Open${identifier}`, parameters);
                 return loader(...parameters);
             },
             userManager,
-            options
+            options,
         );
         this.connection.on(
             `Update${identifier}`,
             (updatedValue: TValue, p: TParameters) =>
-                this.setValue(updatedValue, JSON.stringify(p))
+                this.setValue(updatedValue, JSON.stringify(p)),
         );
         this.connection.on(`Delete${identifier}`, (p: TParameters) =>
-            this.setValue(null, JSON.stringify(p))
+            this.setValue(null, JSON.stringify(p)),
         );
     }
 }

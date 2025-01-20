@@ -189,7 +189,7 @@ export class AuthorizeService implements UserStore {
         const userManager = await this.ensureUserManagerInitialized();
         try {
             const silentUser = await userManager.signinSilent(
-                this.createArguments()
+                this.createArguments(),
             );
             this.updateState(silentUser);
             return this.success(state);
@@ -200,12 +200,12 @@ export class AuthorizeService implements UserStore {
             try {
                 if (this._popUpDisabled) {
                     throw new Error(
-                        "Popup disabled. Change 'AuthorizeService.js:AuthorizeService._popupDisabled' to false to enable it."
+                        "Popup disabled. Change 'AuthorizeService.js:AuthorizeService._popupDisabled' to false to enable it.",
                     );
                 }
 
                 const popUpUser = await userManager.signinPopup(
-                    this.createArguments()
+                    this.createArguments(),
                 );
                 this.updateState(popUpUser);
                 return this.success(state);
@@ -223,18 +223,18 @@ export class AuthorizeService implements UserStore {
                 // PopUps might be blocked by the user, fallback to redirect
                 try {
                     await userManager.signinRedirect(
-                        this.createArguments(state)
+                        this.createArguments(state),
                     );
                     return this.redirect();
                 } catch (redirectError) {
                     console.log(
                         "Redirect authentication error: ",
-                        redirectError
+                        redirectError,
                     );
                     return this.error(
                         redirectError instanceof Error
                             ? redirectError.toString()
-                            : ""
+                            : "",
                     );
                 }
             }
@@ -263,7 +263,7 @@ export class AuthorizeService implements UserStore {
         try {
             if (this._popUpDisabled) {
                 throw new Error(
-                    "Popup disabled. Change 'AuthorizeService.js:AuthorizeService._popupDisabled' to false to enable it."
+                    "Popup disabled. Change 'AuthorizeService.js:AuthorizeService._popupDisabled' to false to enable it.",
                 );
             }
 
@@ -293,7 +293,7 @@ export class AuthorizeService implements UserStore {
         } catch (error) {
             console.log(`There was an error trying to log out '${error}'.`);
             return this.error(
-                error && typeof error === "object" ? error.toString() : ""
+                error && typeof error === "object" ? error.toString() : "",
             );
         }
     }
@@ -336,11 +336,11 @@ export class AuthorizeService implements UserStore {
         }
 
         const response = await fetch(
-            this.applicationPaths.apiAuthorizationClientConfigurationUrl
+            this.applicationPaths.apiAuthorizationClientConfigurationUrl,
         );
         if (!response.ok) {
             throw new Error(
-                `Could not load settings for '${this.applicationName}'`
+                `Could not load settings for '${this.applicationName}'`,
             );
         }
 
@@ -376,7 +376,7 @@ export function useAuthorize() {
     const result = useContext(AuthorizeContext);
     if (result === null) {
         throw new Error(
-            "Authorize service has not been initialized. Call 'useAuthorize' inside of an AuthorizeProvider."
+            "Authorize service has not been initialized. Call 'useAuthorize' inside of an AuthorizeProvider.",
         );
     }
     return result;
@@ -391,7 +391,7 @@ export function AuthorizeProvider({
 }) {
     const authorizeService = useMemo(
         () => new AuthorizeService(applicationName),
-        []
+        [],
     );
     return (
         <AuthorizeContext.Provider value={authorizeService}>

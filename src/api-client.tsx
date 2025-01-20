@@ -26,12 +26,12 @@ export interface ApiClient {
     fetch(
         url: string,
         method: string,
-        data: Data | undefined
+        data: Data | undefined,
     ): Promise<Response>;
     fetchJson<TD>(
         url: string,
         method: string,
-        data: Data | undefined
+        data: Data | undefined,
     ): Promise<ApiResponse<TD>>;
 }
 
@@ -43,14 +43,14 @@ interface ApiClientOptions {
 export class SimpleApiClient implements ApiClient {
     constructor(
         private authorizeService: AuthorizeService | null,
-        private options?: ApiClientOptions
+        private options?: ApiClientOptions,
     ) {}
 
     /** Fetches an url that returns one value */
     async fetchJson<TD>(
         url: string,
         method: string,
-        data: Data | undefined
+        data: Data | undefined,
     ): Promise<ApiResponse<TD>> {
         const response = await this.fetch(url, method, data);
         if (response.ok) {
@@ -66,7 +66,7 @@ export class SimpleApiClient implements ApiClient {
     async fetch(
         url: string,
         method: string,
-        data: Data | undefined
+        data: Data | undefined,
     ): Promise<Response> {
         if (this.options && this.options.onQueryStart)
             this.options.onQueryStart();
@@ -81,7 +81,7 @@ export class SimpleApiClient implements ApiClient {
         ) {
             headers.append(
                 "Authorization",
-                this.authorizeService.authorizationHeader
+                this.authorizeService.authorizationHeader,
             );
             credentials = "omit";
         }
@@ -134,7 +134,7 @@ const defaultErrorMessages = {
 
 export async function parseErrors(
     error: Response,
-    errorMessages: ErrorMessages = defaultErrorMessages
+    errorMessages: ErrorMessages = defaultErrorMessages,
 ) {
     switch (error.status) {
         case 401:
