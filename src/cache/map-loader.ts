@@ -12,7 +12,7 @@ export class MapLoader<TValue, TParameters extends unknown[]> {
             ...parameters: TParameters
         ) => Promise<LoaderResponse<TValue>>,
         private userManager?: UserStore,
-        private options?: LoaderOptions<TValue>
+        private options?: LoaderOptions<TValue>,
     ) {
         makeObservable(this, {
             userIdentifier: observable,
@@ -65,7 +65,7 @@ export class MapLoader<TValue, TParameters extends unknown[]> {
     private async load(
         id: TParameters,
         serialized: string,
-        newIdentifier: string | null | undefined
+        newIdentifier: string | null | undefined,
     ) {
         this.loadingParameters.set(serialized, true);
         const result = await this.loader(...id);
@@ -79,7 +79,7 @@ export class MapLoader<TValue, TParameters extends unknown[]> {
     setValue(
         value: TValue | null,
         serialized: string,
-        newIdentifier: string | null | undefined
+        newIdentifier: string | null | undefined,
     ) {
         this.cache.set(serialized, value);
         this.userIdentifier = newIdentifier;
@@ -90,7 +90,6 @@ export class MapLoader<TValue, TParameters extends unknown[]> {
     getCached(filter?: (x: TParameters) => boolean): [TParameters, TValue][] {
         const result: [TParameters, TValue][] = Array.from(this.cache)
             .filter(([_, value]) => value !== null)
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             .map(([key, value]) => [JSON.parse(key) as TParameters, value!]);
         if (filter) return result.filter(([x]) => filter(x));
         return result;
@@ -98,7 +97,7 @@ export class MapLoader<TValue, TParameters extends unknown[]> {
 
     getCachedValues(): TValue[] {
         return Array.from(this.cache.values()).filter(
-            (x) => x !== null
+            (x) => x !== null,
         ) as TValue[];
     }
 

@@ -17,10 +17,10 @@ export class ArrayLoader<T extends HasId, TParameters> {
     constructor(
         cache: T[] | undefined,
         private loader: (
-            parameters: TParameters
+            parameters: TParameters,
         ) => Promise<LoaderResponse<T[]>>,
         private userManager?: AuthorizeService,
-        private options?: LoaderOptions<T>
+        private options?: LoaderOptions<T>,
     ) {
         makeObservable(this);
         this.cache = cache || observable([]);
@@ -72,7 +72,7 @@ export class ArrayLoader<T extends HasId, TParameters> {
         if (!existing) {
             const length = this.cache.push(value);
             const added = this.cache[length - 1];
-            this.options?.onChange && this.options.onChange(added);
+            if (this.options?.onChange) this.options.onChange(added);
             this.result.push(added);
         } else {
             Object.assign(existing, value);
@@ -127,7 +127,7 @@ export class ArrayLoaderSync<T extends HasId, TParameters> extends ArrayLoader<
         loader: (parameters: TParameters) => Promise<ApiResponse<T[]>>,
         userStore?: AuthorizeService,
         cache?: T[],
-        options?: LoaderOptions<T>
+        options?: LoaderOptions<T>,
     ) {
         super(
             cache,
@@ -136,28 +136,28 @@ export class ArrayLoaderSync<T extends HasId, TParameters> extends ArrayLoader<
                     this.connection.invoke(
                         "Close",
                         identifier,
-                        this.previousParameters
+                        this.previousParameters,
                     );
                 this.previousParameters = parameters;
                 this.connection.invoke("Open", identifier, parameters);
                 return loader(parameters);
             },
             userStore,
-            options
+            options,
         );
         this.connection.on(
             `Add${identifier}`,
             (updatedValue: T, _: TParameters) => {
                 this.addValue(updatedValue);
-            }
+            },
         );
         this.connection.on(
             `Update${identifier}`,
-            (updatedValue: T, _: TParameters) => this.updateValue(updatedValue)
+            (updatedValue: T, _: TParameters) => this.updateValue(updatedValue),
         );
         this.connection.on(
             `Delete${identifier}`,
-            (deleteValue: T, _: TParameters) => this.deleteValue(deleteValue)
+            (deleteValue: T, _: TParameters) => this.deleteValue(deleteValue),
         );
     }
 }
