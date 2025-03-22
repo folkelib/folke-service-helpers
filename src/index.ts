@@ -1,4 +1,4 @@
 export * from "./api-client";
 export * from "./cache";
-export * from "./authorize";
+export * from "./user-store";
 export * from "./contexts";

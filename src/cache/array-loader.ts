@@ -1,6 +1,4 @@
 import { observable, action, makeObservable } from "mobx";
-import { AuthorizeService } from "..";
-import { ApiResponse } from "../api-client";
 import { LoaderOptions, LoaderResponse } from "./options";
 
 export interface HasId {
@@ -11,7 +9,6 @@ export class ArrayLoader<T extends HasId, TParameters> {
     private loadingParameters: string | null = null;
     @observable private loadedParameters: string | null = null;
     @observable private result: T[] | null = null;
-    private authorizationHeader: string | null = null;
     cache: T[];
 
     constructor(
@@ -19,34 +16,18 @@ export class ArrayLoader<T extends HasId, TParameters> {
         private loader: (
             parameters: TParameters,
         ) => Promise<LoaderResponse<T[]>>,
-        private userManager?: AuthorizeService,
         private options?: LoaderOptions<T>,
     ) {
         makeObservable(this);
         this.cache = cache || observable([]);
-        this.authorizationHeader = userManager
-            ? userManager.authorizationHeader
-            : null;
     }
 
     /** Call this only in a @computed or in a render() with @observer */
     getValue(parameters: TParameters) {
         const serialized = JSON.stringify(parameters);
         if (
-            this.loadedParameters === serialized &&
-            (!this.userManager ||
-                this.userManager.authorizationHeader ===
-                    this.authorizationHeader ||
-                this.userManager.authorizationHeader === null)
-        ) {
-            return this.result;
-        }
-        if (
-            this.userManager &&
-            ((this.loadingParameters === serialized &&
-                this.userManager.authorizationHeader ===
-                    this.authorizationHeader) ||
-                this.userManager.authorizationHeader === null)
+            this.loadedParameters === serialized 
+
         ) {
             return this.result;
         }
@@ -54,9 +35,6 @@ export class ArrayLoader<T extends HasId, TParameters> {
             return null;
         }
         this.loadingParameters = serialized;
-        this.authorizationHeader = this.userManager
-            ? this.userManager.authorizationHeader
-            : null;
         this.loader(parameters).then((x) => {
             if (!x.ok) return this.result;
             this.setValues(serialized, x.value);
@@ -112,52 +90,5 @@ export class ArrayLoader<T extends HasId, TParameters> {
             this.loadedParameters = serialized;
             this.loadingParameters = null;
         }
-    }
-}
-
-export class ArrayLoaderSync<T extends HasId, TParameters> extends ArrayLoader<
-    T,
-    TParameters
-> {
-    private previousParameters: TParameters | undefined;
-
-    constructor(
-        private connection: signalR.HubConnection,
-        identifier: string,
-        loader: (parameters: TParameters) => Promise<ApiResponse<T[]>>,
-        userStore?: AuthorizeService,
-        cache?: T[],
-        options?: LoaderOptions<T>,
-    ) {
-        super(
-            cache,
-            async (parameters: TParameters) => {
-                if (this.previousParameters)
-                    this.connection.invoke(
-                        "Close",
-                        identifier,
-                        this.previousParameters,
-                    );
-                this.previousParameters = parameters;
-                this.connection.invoke("Open", identifier, parameters);
-                return loader(parameters);
-            },
-            userStore,
-            options,
-        );
-        this.connection.on(
-            `Add${identifier}`,
-            (updatedValue: T, _: TParameters) => {
-                this.addValue(updatedValue);
-            },
-        );
-        this.connection.on(
-            `Update${identifier}`,
-            (updatedValue: T, _: TParameters) => this.updateValue(updatedValue),
-        );
-        this.connection.on(
-            `Delete${identifier}`,
-            (deleteValue: T, _: TParameters) => this.deleteValue(deleteValue),
-        );
     }
 }

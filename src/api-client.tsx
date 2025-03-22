@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useMemo } from "react";
-import { AuthorizeContext, AuthorizeService } from "./authorize/authorize";
+import { UserStore, UserStoreContext } from "./user-store";
 
 export type Data =
     | Blob
@@ -42,7 +42,7 @@ interface ApiClientOptions {
 
 export class SimpleApiClient implements ApiClient {
     constructor(
-        private authorizeService: AuthorizeService | null,
+        private authorizeService: UserStore | null,
         private options?: ApiClientOptions,
     ) {}
 
@@ -151,7 +151,7 @@ export async function parseErrors(
 export const ApiClientContext = createContext<ApiClient | null>(null);
 
 export function ApiClientProvider({ children }: { children: ReactNode }) {
-    const authorizeService = useContext(AuthorizeContext);
+    const authorizeService = useContext(UserStoreContext);
     const apiClient = useMemo(() => {
         return new SimpleApiClient(authorizeService);
     }, [authorizeService]);

@@ -1,21 +1,17 @@
 import { observable, action, makeObservable } from "mobx";
-import { UserStore } from "../authorize";
 import { LoaderOptions, LoaderResponse } from "./options";
 
 export class MapLoader<TValue, TParameters extends unknown[]> {
     public cache = new Map<string, TValue | null>();
     private loadingParameters = new Map<string, boolean>();
-    public userIdentifier?: string | null = null;
 
     constructor(
         private loader: (
             ...parameters: TParameters
         ) => Promise<LoaderResponse<TValue>>,
-        private userManager?: UserStore,
         private options?: LoaderOptions<TValue>,
     ) {
         makeObservable(this, {
-            userIdentifier: observable,
             cache: options?.readonly ? observable.shallow : observable,
             setValue: action,
         });
@@ -25,64 +21,42 @@ export class MapLoader<TValue, TParameters extends unknown[]> {
     getValue(...parameters: TParameters): TValue | null {
         const serialized = JSON.stringify(parameters);
         const cache = this.cache.get(serialized);
-        const userManager = this.userManager;
-        const newIdentifier = userManager?.identifier;
 
-        if (
-            userManager &&
-            !newIdentifier &&
-            !this.options?.allowNotIdentified
-        ) {
-            return null;
-        }
 
         if (this.loadingParameters)
             if (
-                cache !== undefined &&
-                (this.userManager === undefined ||
-                    newIdentifier === this.userIdentifier ||
-                    newIdentifier === null)
+                cache !== undefined 
             ) {
                 return cache;
             }
         const loading = this.loadingParameters.get(serialized);
 
         if (loading) {
-            if (
-                userManager === undefined ||
-                newIdentifier === this.userIdentifier ||
-                (userManager !== undefined && newIdentifier === null)
-            ) {
                 return cache || null;
-            } else {
-                return null;
-            }
+            
         }
-        this.load(parameters, serialized, newIdentifier);
+        this.load(parameters, serialized);
         return null;
     }
 
     private async load(
         id: TParameters,
         serialized: string,
-        newIdentifier: string | null | undefined,
     ) {
         this.loadingParameters.set(serialized, true);
         const result = await this.loader(...id);
         if (result.ok) {
-            this.setValue(result.value, serialized, newIdentifier);
+            this.setValue(result.value, serialized);
         } else {
-            this.setValue(null, serialized, newIdentifier);
+            this.setValue(null, serialized);
         }
     }
 
     setValue(
         value: TValue | null,
         serialized: string,
-        newIdentifier: string | null | undefined,
     ) {
         this.cache.set(serialized, value);
-        this.userIdentifier = newIdentifier;
         this.loadingParameters.set(serialized, false);
         if (this.options?.onChange && value) this.options.onChange(value);
     }

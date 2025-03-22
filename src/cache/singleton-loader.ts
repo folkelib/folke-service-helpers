@@ -1,44 +1,28 @@
 import { observable, action, computed, makeObservable } from "mobx";
-import { AuthorizeService } from "..";
 import { LoaderOptions, LoaderResponse } from "./options";
 
 export class SingletonLoader<TValue> {
     @observable cache: TValue | null = null;
     @observable private loaded = false;
     private loading = false;
-    private userToken: string | null;
     allowNotIdentified = false;
 
     constructor(
         private loader: () => Promise<LoaderResponse<TValue>>,
-        private userManager?: AuthorizeService,
         private options?: LoaderOptions<TValue>,
     ) {
         makeObservable(this);
-        if (userManager) {
-            this.userToken = userManager.authorizationHeader;
-        } else {
-            this.userToken = null;
-        }
     }
 
     /** Call this only in a @computed or in a render() with @observer */
     getValue(): TValue | null {
         if (
-            this.loaded &&
-            (this.userManager === undefined ||
-                this.userManager.authorizationHeader === this.userToken ||
-                this.userManager.authorizationHeader === null)
+            this.loaded 
         ) {
             return this.cache;
         }
         if (
-            (this.loading &&
-                (this.userManager === undefined ||
-                    this.userManager.authorizationHeader === this.userToken)) ||
-            (this.userManager !== undefined &&
-                this.userManager.authorizationHeader === null &&
-                !this.allowNotIdentified)
+            (this.loading )
         ) {
             return this.cache;
         }
@@ -48,10 +32,6 @@ export class SingletonLoader<TValue> {
     }
 
     private load() {
-        this.userToken =
-            this.userManager !== undefined
-                ? this.userManager.authorizationHeader
-                : null;
         this.loading = true;
         this.loader().then((x) => {
             if (!x.ok) {
