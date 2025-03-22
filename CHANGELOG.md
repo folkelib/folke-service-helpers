@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.0](https://github.com/folkelib/folke-service-helpers/compare/v3.6.9...v3.7.0) (2025-03-22)
+
+
+### Features
+
+* replace authorization logic with user-store context and remove deprecated authorize module ([9e6c494](https://github.com/folkelib/folke-service-helpers/commit/9e6c494077ebe1fc039b1ea99a49329dc8b1b929))
+
 ### [3.6.9](https://github.com/folkelib/folke-service-helpers/compare/v3.6.8...v3.6.9) (2025-01-20)
 
 ### [3.6.8](https://github.com/folkelib/folke-service-helpers/compare/v3.6.7...v3.6.8) (2025-01-20)
