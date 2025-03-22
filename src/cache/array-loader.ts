@@ -25,10 +25,7 @@ export class ArrayLoader<T extends HasId, TParameters> {
     /** Call this only in a @computed or in a render() with @observer */
     getValue(parameters: TParameters) {
         const serialized = JSON.stringify(parameters);
-        if (
-            this.loadedParameters === serialized 
-
-        ) {
+        if (this.loadedParameters === serialized) {
             return this.result;
         }
         if (this.loadingParameters === serialized) {

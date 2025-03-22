@@ -22,27 +22,20 @@ export class MapLoader<TValue, TParameters extends unknown[]> {
         const serialized = JSON.stringify(parameters);
         const cache = this.cache.get(serialized);
 
-
         if (this.loadingParameters)
-            if (
-                cache !== undefined 
-            ) {
+            if (cache !== undefined) {
                 return cache;
             }
         const loading = this.loadingParameters.get(serialized);
 
         if (loading) {
-                return cache || null;
-            
+            return cache || null;
         }
         this.load(parameters, serialized);
         return null;
     }
 
-    private async load(
-        id: TParameters,
-        serialized: string,
-    ) {
+    private async load(id: TParameters, serialized: string) {
         this.loadingParameters.set(serialized, true);
         const result = await this.loader(...id);
         if (result.ok) {
@@ -52,10 +45,7 @@ export class MapLoader<TValue, TParameters extends unknown[]> {
         }
     }
 
-    setValue(
-        value: TValue | null,
-        serialized: string,
-    ) {
+    setValue(value: TValue | null, serialized: string) {
         this.cache.set(serialized, value);
         this.loadingParameters.set(serialized, false);
         if (this.options?.onChange && value) this.options.onChange(value);

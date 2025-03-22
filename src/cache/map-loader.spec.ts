@@ -37,7 +37,7 @@ test("the identifier didn't change", async () => {
 test("the identifier did change", async () => {
     // Arrange
     let serial = 0;
-    
+
     const service = (x: number): Promise<LoaderResponse<string>> =>
         Promise.resolve({
             value: `_${x + serial++}`,

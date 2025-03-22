@@ -22,14 +22,10 @@ export class ValueLoader<TValue, TParameters extends unknown[]> {
     /** Call this only in a @computed or in a render() with @observer */
     getValue(...parameters: TParameters): TValue | null {
         const serialized = JSON.stringify(parameters);
-        if (
-            this.loadedParameters === serialized 
-        ) {
+        if (this.loadedParameters === serialized) {
             return this.cache;
         }
-        if (
-            (this.loadingParameters === serialized )
-        ) {
+        if (this.loadingParameters === serialized) {
             return this.cache;
         }
 

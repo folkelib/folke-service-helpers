@@ -16,14 +16,10 @@ export class SingletonLoader<TValue> {
 
     /** Call this only in a @computed or in a render() with @observer */
     getValue(): TValue | null {
-        if (
-            this.loaded 
-        ) {
+        if (this.loaded) {
             return this.cache;
         }
-        if (
-            (this.loading )
-        ) {
+        if (this.loading) {
             return this.cache;
         }
 
