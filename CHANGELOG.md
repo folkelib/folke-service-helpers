@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.7.1](https://github.com/folkelib/folke-service-helpers/compare/v3.7.0...v3.7.1) (2025-12-23)
+
 ## [3.7.0](https://github.com/folkelib/folke-service-helpers/compare/v3.6.9...v3.7.0) (2025-03-22)
 
 
